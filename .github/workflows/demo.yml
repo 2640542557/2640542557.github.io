@@ -1,0 +1,35 @@
+name: 打包gitbook项目
+
+on: push
+
+permissions:
+  contents: write
+  
+jobs:
+  gitbook-build:
+    name: gitbook-build工作
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 读取仓库内容
+      uses: actions/checkout@v4
+      
+    - name: 使用 Node.js V10.24.1这个版本，高版本有问题
+      uses: actions/setup-node@v2
+      with:
+        node-version: 10.24.1
+      
+    - name: 安装gitbook和相关依赖
+      run: |
+        npm install gitbook-cli -g
+        npm install gitbook-plugin-lightbox
+        gitbook install
+      
+    - name: 项目打包
+      run: gitbook build
+    
+    - name: 部署到 GitHub Pages
+      uses: JamesIves/github-pages-deploy-action@v4
+      with:
+        branch: gh-pages # 分支名称
+        folder: _book #部署的目录
